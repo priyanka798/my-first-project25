@@ -7,4 +7,4 @@ def create_bucket(priyanka_name):
     print(f"Bucket {bucket.name} created.")
 
 if _name_ == "_main_":
-    create_bucket("priyanka_name")
+    create_bucket("bucket-using-github")
