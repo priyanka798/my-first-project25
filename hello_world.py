@@ -1,18 +1,10 @@
-# hello_world.py
+from google.cloud import storage
 
-def main():
-    print("Hello, World!")
+def create_bucket(priyanka_name):
+    """Creates a new bucket."""
+    storage_client = storage.Client()
+    bucket = storage_client.create_bucket(bucket_name)
+    print(f"Bucket {bucket.name} created.")
 
-    # Define two numbers
-    num1 = 5
-    num2 = 3
-
-    # Calculate the sum
-    sum_result = num1 + num2
-
-    # Print the sum
-    print(f"The sum of {num1} and {num2} is {sum_result}")
-
-
-if __name__ == "__main__":
-    main()
+if _name_ == "_main_":
+    create_bucket("your-new-bucket-name")
