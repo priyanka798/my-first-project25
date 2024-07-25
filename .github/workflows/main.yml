@@ -20,8 +20,12 @@ jobs:
         project_id: ${{ secrets.GCP_PROJECT_ID }}
         service_account_key: ${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}
 
-    - name: Create GCP Bucket
+    - name: Decode and activate service account
       run: |
         echo "${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}" | base64 --decode > ${HOME}/gcloud-key.json
+        cat ${HOME}/gcloud-key.json  # Debugging step to verify the file content
         gcloud auth activate-service-account --key-file=${HOME}/gcloud-key.json
+
+    - name: Create GCP Bucket
+      run: |
         python create_bucket.py  # Ensure you have your script in the right path
