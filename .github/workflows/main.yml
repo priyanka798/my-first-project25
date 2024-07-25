@@ -24,4 +24,4 @@ jobs:
       run: |
         echo "${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}" | base64 --decode > ${HOME}/gcloud-key.json
         gcloud auth activate-service-account --key-file=${HOME}/gcloud-key.json
-        gsutil mb -p ${{ secrets.GCP_PROJECT_ID }} gs://sample-github/
+        python create_bucket.py  # Ensure you have your script in the right path
