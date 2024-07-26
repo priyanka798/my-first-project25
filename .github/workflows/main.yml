@@ -1,25 +1,38 @@
-name: Create GCP Bucket
+name: Deploy to Google Cloud Functions
 
 on:
   push:
-    branches:
-      - main
+    branches: [ 'main' ]
 
 jobs:
-  create-bucket:
-    runs-on: ubuntu-latest
+  deploy:
+    runs-on:  ubuntu-latest 
+    permissions:
+      contents:  read 
+      id-token:  write 
+      steps:
+        - name: Checkout
+          uses: actions/checkout@v4
 
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v2
+        - name: Google Auth
+          id: auth
+          uses:  google-github-actions/auth@v2 
+          with:
+            workload_identity_provider: '${{ secrets.GCP_PJ_NAMEID }}' # e.g. - projects/123456789/locations/global/workloadIdentityPools/my-pool/providers/my-provider
+            service_account: '${{ secrets.WIF_SERVICE_ACCOUNT }}' # e.g. - my-service-account@my-project.iam.gserviceaccount.com
 
-    - name: Decode and activate service account
-      run: |
-        echo "${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}" | base64 --decode > ${HOME}/gcloud-key.json
-        echo "Contents of gcloud-key.json:"
-        cat ${HOME}/gcloud-key.json  # Debugging step
-        gcloud auth activate-service-account --key-file=${HOME}/gcloud-key.json
-
-    - name: Create GCP Bucket
-      run: |
-        python create_bucket.py  # Ensure you have your script in the right path
+        - name: Deploy Cloud Functions
+          uses:  google-github-actions/deploy-cloud-functions@v2 
+          with:
+            name: insert_data
+            description: test-description
+            region: us-central1
+            entry_point: insert_data
+            runtime: python38
+            env_vars_file: .github/env/env.yaml
+            event_trigger_type: providers/cloud.pubsub/eventTypes/topic.publish
+            event_trigger_resource: projects/${{ secrets.GCP_PJ_NAMEID }}/topics/trigger-github-actions-deploy-gf
+            
+        # Runs a single command using the runners shell
+        - name: Deployment has completed
+          run: echo Deployment has completed
