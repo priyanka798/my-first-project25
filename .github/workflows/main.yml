@@ -20,6 +20,16 @@ jobs:
         project_id: ${{ secrets.GCP_PROJECT_ID }}
         service_account_key: ${{ secrets.GCP_SA_KEY }}
 
-    - name: Create GCP Bucket
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.9'  # Use the Python version required for your script
+
+    - name: Install dependencies
       run: |
-        gsutil mb -p ${{ secrets.GCP_PROJECT_ID }} gs://sample-github/
+        python -m pip install --upgrade pip
+        pip install google-cloud-storage
+
+    - name: Run Python script to create GCP Bucket
+      run: |
+        python path/to/your/script.py  # Update with the correct path to your script
